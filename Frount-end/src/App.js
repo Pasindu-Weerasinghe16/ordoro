@@ -2,7 +2,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import './App.css';
 import {BrowserRouter , Route , Routes} from "react-router-dom";
-
+import './index.css';
 //let value = {user , signin , signout};
 
 
