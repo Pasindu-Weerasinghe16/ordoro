@@ -1,7 +1,69 @@
 import { FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+import { Result } from "postcss";
 
 function Register() {
+
+    const [form , setFrom] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+        imageUrl: "",
+    });
+
+    const navigate = useNavigate();
+    
+    const handleInputChange = (e) => {
+        setFrom({ ...form, [e.target.name]: e.target.value });
+
+    };
+
+
+    const registerUser = () => {
+        fetch("http://localhost:4000/api/register" ,{
+            method: "POST",
+            headers : {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify(form),
+        })
+        .then((result) => {
+            alert("Successfully Registered, Now Login with your details");
+            navigate('./login')
+        })
+        .catch((err) => console.log(err));
+    };
+
+    const uploadImage = async (image) => {
+        const data = new FormData();
+        data.append("file" , image);
+        data.append("upload_preset" , "inventoryapp");
+
+        await fetch("http://localhost:4000/api/UploadImage",{
+            method : "POST",
+            body : data,
+        })
+        .then(res => res.json())
+        .then((data) => {
+            setFrom({ ...form , imageUrl: data.url })
+            alert("Image Successfully Uploaded");
+        })
+        .catch((error) => console.log(error));
+    };
+
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    }
+
+
+
+
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 h-screen items-center place-items-center">
@@ -19,7 +81,7 @@ function Register() {
               Sign Up
             </h2>
           </div>
-          <form className="mt-8 space-y-6">
+          <form className="mt-8 space-y-6"  onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm space-y-6">
               <div className="flex gap-4">
                 <input
@@ -28,6 +90,8 @@ function Register() {
                   required
                   className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   placeholder="First Name"
+                  value={form.firstName}
+                  onChange={handleInputChange}
                 />
                 <input
                   name="lastName"
@@ -35,6 +99,8 @@ function Register() {
                   required
                   className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   placeholder="Last Name"
+                  value={form.lastName}
+                  onChange={handleInputChange}
                 />
               </div>
               <div>
@@ -46,6 +112,8 @@ function Register() {
                   required
                   className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   placeholder="Email address"
+                  value={form.email}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="relative">
@@ -57,6 +125,8 @@ function Register() {
                   required
                   className="relative block w-full rounded-md border-0 py-3 px-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   placeholder="Password"
+                  value={form.password}
+                  onChange={handleInputChange}
                 />
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <FaLock className="text-gray-400" />
@@ -70,6 +140,8 @@ function Register() {
                   required
                   className="relative block w-full rounded-md border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   placeholder="Phone Number"
+                  value={form.phoneNumber}
+                  onChange={handleInputChange}
                 />
               </div>
             </div>
@@ -102,6 +174,7 @@ function Register() {
               <button
                 type="submit"
                 className="group relative flex w-full justify-center rounded-md bg-gradient-to-r from-blue-600 to-cyan-400 py-2 px-3 text-lg font-semibold text-white shadow-lg hover:from-blue-500 hover:to-cyan-300 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                onClick={registerUser}
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <FaLock className="h-5 w-5 text-cyan-200 group-hover:text-cyan-100" aria-hidden="true" />
